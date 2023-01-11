@@ -1,15 +1,13 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react'
-import { getPositions } from './api/data';
+import { useEffect } from 'react'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
 
-  useEffect(() => {
-    const data  = getPositions();
-    console.log(data);
-  }, [])
+  const fetchDrones = setInterval(() => {
+    const drones = axios.get("http://localhost:3000/api/drones")
+    .then(res => console.log(res));
+  }, 2000);
   
 
   return (
