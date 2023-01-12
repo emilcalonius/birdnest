@@ -20,8 +20,9 @@ interface IDrone {
 }
 
 fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify({}, null, "\t"));
+fs.writeFileSync(process.cwd() + '\\drones.json', JSON.stringify({}, null, "\t"));
 
-const listDrones = json => {
+const getDroneArray = json => {
     const drones: Array<IDrone> = [];
     json.report.capture.drone.forEach(drone => {
         const newDrone = {
@@ -51,17 +52,39 @@ const listviolations = (drones: IDrone[]) => {
     }
 }
 
-setInterval(() => {
-    console.log("fetching");
-    axios.get("http://localhost:3000/api/drones")
-        .then(res => listviolations(res.data));
+const listDrones = (drones: IDrone[]) => {
+    try {
+        let content = {};
+        drones.forEach((drone: IDrone) => {
+            content[drone.serialNumber] = drone;
+        })
+        fs.writeFileSync(process.cwd() + '\\drones.json', JSON.stringify(content, null, "\t"));
+    } catch(err) {
+        console.log(err);
+    }
+}
+
+setInterval(async () => {
+    try {
+        const axiosResponse = await axios.get("https://assignments.reaktor.com/birdnest/drones");
+        const json = JSON.parse(xml2json(axiosResponse.data, { compact: true }));
+        
+        const droneArray = getDroneArray(json);
+        listDrones(droneArray);
+        listviolations(droneArray);
+    } catch(err) {
+        console.log(err);
+    }
 }, 2000);
 
 app.get('/api/drones', async (req, res) => {
     try {
-        const axiosResponse = await axios.get("https://assignments.reaktor.com/birdnest/drones");
-        const json = JSON.parse(xml2json(axiosResponse.data, { compact: true }));
-        res.send(listDrones(json));
+        let content = JSON.parse(fs.readFileSync(process.cwd() + '\\drones.json', 'utf8'));
+        const arr = new Array<Array<number>>();
+        Object.keys(content).forEach(key => {
+            arr.push(content[key]);
+        });
+        res.send(arr);
     } catch(err) {
         console.log(err);
     }
@@ -73,7 +96,6 @@ app.get('/api/violations', (req, res) => {
         const arr = new Array<Array<string>>();
         Object.keys(content).forEach(key => {
             arr.push([key, content[key]]);
-
         });
         res.send(arr);
     } catch(err) {

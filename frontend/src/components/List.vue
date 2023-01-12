@@ -19,27 +19,31 @@ export default {
 
 <template>
     <div class="list-container">
-        <ul class="violations-list">
-            <li v-for="violation in violations" class="item">
-                <div class="side"></div>
-                <div class="time">
-                    <h5>Time</h5>
-                    <p>{{ `${new Date(violation[1]).getHours()}:${new Date(violation[1]).getMinutes()}` }}</p>
-                </div>
-                <div class="drone">
-                    <h5>Drone serial num.</h5>
-                    <p>{{ `${violation[0]}` }}</p>
-                </div>
-            </li>
-        </ul>
+        <h1 class="header">Violations</h1>
+        <div class="list">
+            <ul class="violations-list">
+                <li v-for="violation in violations" class="item">
+                    <div class="side"></div>
+                    <div class="time">
+                        <h5>Time</h5>
+                        <p>{{ `${new Date(violation[1]).getHours()}:${new Date(violation[1]).getMinutes()}` }}</p>
+                    </div>
+                    <div class="drone">
+                        <h5>Drone serial num.</h5>
+                        <p>{{ `${violation[0]}` }}</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 
 <style scoped>
-.list-container {
-    height: 80vh;
+.list {
+    height: 700px;
     overflow-y: scroll;
     width: 30rem;
+    padding: 1.5rem;
 }
 
 .violations-list {
@@ -47,6 +51,7 @@ export default {
     flex-direction: column;
     gap: 0.5rem;
     list-style: none;
+    padding: 0;
 }
 
 .item {

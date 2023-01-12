@@ -67,10 +67,6 @@ export default {
 </template>
 
 <style scoped>
-.canvas {
-    border: 2px solid red;
-}
-
 .radar {
     height: 700px;
     width: 700px;

@@ -4,8 +4,8 @@ import Radar from './components/Radar.vue';
 </script>
 
 <template>
-  <!-- <List /> -->
   <Radar />
+  <List />
 </template>
 
 <style scoped>
