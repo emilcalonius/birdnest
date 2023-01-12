@@ -11,6 +11,8 @@ const corsOptions = {
     origin: "http://localhost:5173"
 }
 
+app.use(cors(corsOptions));
+
 interface IDrone {
     positionX: number;
     positionY: number;
@@ -18,6 +20,7 @@ interface IDrone {
 }
 
 fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify({}, null, "\t"));
+fs.writeFileSync(process.cwd() + '\\violatingPilots.json', JSON.stringify({}, null, "\t"));
 
 const listDrones = json => {
     const drones: Array<IDrone> = [];
@@ -32,30 +35,52 @@ const listDrones = json => {
     return drones;
 }
 
-const listViolatingDrones = (drones: IDrone[]) => {
-    const violatingDrones: IDrone[] = drones.filter(drone => {
-        return (250000 - 100000 < drone.positionX && drone.positionX < 250000 + 100000) && 
-            (250000 - 100000 < drone.positionY && drone.positionY < 250000 + 100000);
-    });
+const listviolations = (drones: IDrone[]) => {
+    try {
+        const violations: IDrone[] = drones.filter(drone => {
+            return (250000 - 100000 < drone.positionX && drone.positionX < 250000 + 100000) && 
+                (250000 - 100000 < drone.positionY && drone.positionY < 250000 + 100000);
+        });
 
-    let content = JSON.parse(fs.readFileSync(process.cwd() + '\\violations.json', 'utf8'));
-    violatingDrones.forEach(drone => {
-        content[drone.serialNumber] = new Date();
-    })
-    fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify(content, null, "\t"));
+        let content = JSON.parse(fs.readFileSync(process.cwd() + '\\violations.json', 'utf8'));
+        violations.forEach((drone: IDrone) => {
+            content[drone.serialNumber] = new Date();
+        })
+        fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify(content, null, "\t"));
+    } catch(err) {
+        console.log(err);
+    }
 }
 
 setInterval(() => {
     console.log("fetching");
     axios.get("http://localhost:3000/api/drones")
-        .then(res => listViolatingDrones(res.data));
+        .then(res => listviolations(res.data));
 }, 2000);
 
-app.get('/api/drones', cors(corsOptions), async (req, res) => {
+app.get('/api/drones', async (req, res) => {
     try {
-        const xml = await axios.get("https://assignments.reaktor.com/birdnest/drones");
-        const json = JSON.parse(xml2json(xml.data, { compact: true }));
+        const axiosResponse = await axios.get("https://assignments.reaktor.com/birdnest/drones");
+        const json = JSON.parse(xml2json(axiosResponse.data, { compact: true }));
         res.send(listDrones(json));
+    } catch(err) {
+        console.log(err);
+    }
+});
+
+app.get('/api/violations', (req, res) => {
+    try {
+        let content = JSON.parse(fs.readFileSync(process.cwd() + '\\violations.json', 'utf8'));
+        res.send(content);
+    } catch(err) {
+        console.log(err);
+    }
+});
+
+app.get('/api/pilots/:serialNumber', async (req, res) => {
+    try {
+        const axiosResponse = await axios.get(`https://assignments.reaktor.com/birdnest/pilots/${req.params["serialNumber"]}`);
+        res.send(axiosResponse.data);
     } catch(err) {
         console.log(err);
     }
