@@ -8,7 +8,7 @@ const app = express();
 const port = 3000;
 
 const corsOptions = {
-    origin: "http://localhost:5173"
+    origin: "*"
 }
 
 app.use(cors(corsOptions));
@@ -20,7 +20,6 @@ interface IDrone {
 }
 
 fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify({}, null, "\t"));
-fs.writeFileSync(process.cwd() + '\\violatingPilots.json', JSON.stringify({}, null, "\t"));
 
 const listDrones = json => {
     const drones: Array<IDrone> = [];
@@ -71,7 +70,12 @@ app.get('/api/drones', async (req, res) => {
 app.get('/api/violations', (req, res) => {
     try {
         let content = JSON.parse(fs.readFileSync(process.cwd() + '\\violations.json', 'utf8'));
-        res.send(content);
+        const arr = new Array<Array<string>>();
+        Object.keys(content).forEach(key => {
+            arr.push([key, content[key]]);
+
+        });
+        res.send(arr);
     } catch(err) {
         console.log(err);
     }
