@@ -1,5 +1,6 @@
 <script lang="ts">
 import axios from 'axios';
+import ListItem from './ListItem.vue';
 
 export default {
     name: "List",
@@ -8,12 +9,21 @@ export default {
             violations: [] as string[][]
         }
     },
-    mounted() {
+    computed: {
+        sortedViolations() {
+            const violationsList = this.violations;
+            violationsList.sort((a: string[], b: string[]) => Date.parse(b[1]) - Date.parse(a[1]));
+            return violationsList;
+        }
+    },
+    created() {
         setInterval(async () => {
             const axiosResponse = await axios.get("http://localhost:3000/api/violations");
-            this.violations = axiosResponse.data as string[][];
+            const violationsList = axiosResponse.data;
+            this.violations = violationsList;
         }, 2000);
-    }
+    },
+    components: { ListItem }
 }
 </script>
 
@@ -22,17 +32,11 @@ export default {
         <h1 class="header">Violations</h1>
         <div class="list">
             <ul class="violations-list">
-                <li v-for="violation in violations" class="item">
-                    <div class="side"></div>
-                    <div class="time">
-                        <h5>Time</h5>
-                        <p>{{ `${new Date(violation[1]).getHours()}:${new Date(violation[1]).getMinutes()}` }}</p>
-                    </div>
-                    <div class="drone">
-                        <h5>Drone serial num.</h5>
-                        <p>{{ `${violation[0]}` }}</p>
-                    </div>
-                </li>
+                <ListItem 
+                    v-for="violation in sortedViolations" 
+                    :date="violation[1]" 
+                    :serial-num="violation[0]" 
+                />
             </ul>
         </div>
     </div>
@@ -52,35 +56,5 @@ export default {
     gap: 0.5rem;
     list-style: none;
     padding: 0;
-}
-
-.item {
-    display: flex;
-    gap: 1rem;
-    justify-content: space-between;
-    align-items: center;
-    background-color: hsl(235, 16%, 15%);
-    border: 2px solid black;
-    border-radius: 5px;
-    width: 25rem;
-    height: 7rem;
-}
-
-.side {
-    background-color: hsl(0, 43%, 53%);
-    width: 1rem;
-    height: 100%;
-    border-radius: 5px 0px 0px 5px;
-}
-
-.time, .drone {
-    padding: 0.5rem 2rem 0.5rem 2rem;
-}
-
-@media (hover: hover) {
-    .item:hover {
-        transform: scale(105%);
-        cursor: pointer;
-    }
 }
 </style>
