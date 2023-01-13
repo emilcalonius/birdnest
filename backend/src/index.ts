@@ -52,6 +52,21 @@ const listviolations = (drones: IDrone[]) => {
     }
 }
 
+const removeExpiredViolations = () => {
+    try {
+        let content = JSON.parse(fs.readFileSync(process.cwd() + '\\violations.json', 'utf8'));
+        Object.keys(content).forEach((key: string) => {
+            const TEN_MINUTES = 1000 * 60 * 10; //ten minutes in milliseconds
+            const tenMinutesAgo = Date.now() - TEN_MINUTES;
+            if(Date.parse(content[key]) < tenMinutesAgo) delete content[key];
+
+        })
+        fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify(content, null, "\t"));
+    } catch(err) {
+        console.log(err);
+    }
+}
+
 const listDrones = (drones: IDrone[]) => {
     try {
         let content = {};
@@ -64,6 +79,7 @@ const listDrones = (drones: IDrone[]) => {
     }
 }
 
+// Fetch drones, list airspace violations and remove expired violations every 2 seconds
 setInterval(async () => {
     try {
         const axiosResponse = await axios.get("https://assignments.reaktor.com/birdnest/drones");
@@ -72,6 +88,7 @@ setInterval(async () => {
         const droneArray = getDroneArray(json);
         listDrones(droneArray);
         listviolations(droneArray);
+        removeExpiredViolations();
     } catch(err) {
         console.log(err);
     }

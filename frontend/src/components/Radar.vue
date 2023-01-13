@@ -36,8 +36,8 @@ export default {
             ctx.stroke();
 
             this.drones.forEach((drone: IDrone) => {
-                const x = Math.ceil(drone.positionX / 1000);
-                const y = Math.ceil(drone.positionY / 1000);
+                const x = drone.positionX / 1000;
+                const y = drone.positionY / 1000;
                 
                 ctx.fillStyle = "hsla(120, 100%, 47%, 0.42)";
                 ctx.fillRect(x, y, 10, 10);
