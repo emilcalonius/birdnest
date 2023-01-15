@@ -9,7 +9,8 @@ export default {
         serialNum: String,
         pilot: {
             type: Object as PropType<IPilot>
-        }
+        },
+        distance: Number
     },
     computed: {
         formattedTime() {
@@ -34,21 +35,25 @@ export default {
     <li class="list-item">
         <div class="side"></div>
         <div class="pilot">
-            <div class="time">
-                <h5>Time</h5>
-                <p>{{ formattedTime }}</p>
-            </div>
             <div class="name">
                 <h5>Name</h5>
                 <p>{{ pilotFullName }}</p>
             </div>
-            <div class="email">
-                <h5>Email</h5>
-                <p>{{ pilot?.email }}</p>
+            <div class="time">
+                <h5>Time</h5>
+                <p>{{ formattedTime }}</p>
+            </div>
+            <div class="distance">
+                <h5>Distance from nest</h5>
+                <p>{{ distance }}m</p>
             </div>
             <div class="phone">
                 <h5>Phone</h5>
                 <p>{{ pilot?.phoneNumber }}</p>
+            </div>
+            <div class="email">
+                <h5>Email</h5>
+                <p>{{ pilot?.email }}</p>
             </div>
         </div>
         
@@ -64,27 +69,32 @@ export default {
     background-color: hsl(235, 16%, 15%);
     border: 2px solid black;
     border-radius: 5px;
-    width: 490px;
+    width: 550px;
     height: 18rem;
 }
 
 .side {
     background-color: hsl(0, 43%, 53%);
-    width: 1rem;
+    width: 10px;
     height: 100%;
     border-radius: 5px 0px 0px 5px;
 }
 
 .pilot {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    padding: 2rem;
+    padding: 1rem;
+    width: 490px;
 }
 
-.name, .email, .phone, .time {
+.name, .email, .phone, .time, .distance {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.email {
+    grid-column: 2 / span 2;
 }
 </style>

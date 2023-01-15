@@ -172,4 +172,9 @@ export default {
     top: 6px;
     left: 255px;
 }
+
+.vertical-line, .horizontal-line,
+.hundred, .sweep {
+    pointer-events: none;
+}
 </style>

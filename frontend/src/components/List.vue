@@ -43,6 +43,7 @@ export default {
                     :date="violation.date" 
                     :serial-num="violation.droneSerialNumber" 
                     :pilot="pilots.find(elem => elem.droneSerialNumber === violation.droneSerialNumber)"
+                    :distance="Math.floor(violation.distanceFromNest / 1000)"
                 />
             </ul>
         </div>
@@ -55,10 +56,10 @@ export default {
 }
 
 .list {
-    height: 700px;
     overflow-y: scroll;
-    width: 500px;
     padding: 0 1.5rem 0 1.5rem;
+    width: 550px;
+    height: 900px;
 }
 
 .violations-list {
