@@ -60,14 +60,9 @@ export default {
     width: 50px;
 }
 
-.header {
-    padding-left: 1.5rem;
-}
-
 .list {
     overflow-y: scroll;
-    padding: 0 1.5rem 0 1.5rem;
-    width: 550px;
+    width: 570px;
     height: 900px;
 }
 

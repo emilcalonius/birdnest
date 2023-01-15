@@ -1,6 +1,7 @@
 <script lang="ts">
 import axios from 'axios';
 import { IDrone } from '../types/Drone';
+import DroneInfo from './DroneInfo.vue';
 
 export default {
     name: "Radar",
@@ -8,60 +9,52 @@ export default {
         return {
             drones: [] as IDrone[],
             selectedDrone: {} as IDrone
-        }
+        };
     },
     methods: {
         initCanvas(): void {
             const canvas = document.querySelector(".canvas") as HTMLCanvasElement;
             const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-
             ctx.strokeStyle = "red";
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.arc(250, 250, 100, 0, 2 * Math.PI);
             ctx.stroke();
-
             canvas.height = 500;
             canvas.width = 500;
         },
         drawDrones(): void {
             const canvas = document.querySelector(".canvas") as HTMLCanvasElement;
             const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             ctx.strokeStyle = "red";
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.arc(250, 250, 100, 0, 2 * Math.PI);
             ctx.stroke();
-
             this.drones.forEach((drone: IDrone) => {
                 const x = drone.positionX / 1000;
                 const y = drone.positionY / 1000;
-
-                if(drone.serialNumber === this.selectedDrone.serialNumber) {
+                if (drone.serialNumber === this.selectedDrone.serialNumber) {
                     const indicator = new Path2D();
                     indicator.arc(x, y, 15, 0, 2 * Math.PI);
                     ctx.strokeStyle = "hsla(120, 100%, 47%, 0.42)";
                     ctx.stroke(indicator);
                 }
-
                 const circle = new Path2D();
                 circle.arc(x, y, 10, 0, 2 * Math.PI);
                 ctx.fillStyle = "hsla(120, 100%, 47%, 0.42)";
                 ctx.fill(circle);
-            })
+            });
         },
         selectDrone(e: MouseEvent) {
             const mouseX = e.offsetX;
             const mouseY = e.offsetY;
-
             this.drones.forEach((drone: IDrone) => {
                 const droneX = drone.positionX / 1000;
                 const droneY = drone.positionY / 1000;
-                if((mouseY >= droneY - 10 && mouseY <= droneY + 10) && 
-                (mouseX >= droneX - 10 && mouseX <= droneX + 10)) {
+                if ((mouseY >= droneY - 10 && mouseY <= droneY + 10) &&
+                    (mouseX >= droneX - 10 && mouseX <= droneX + 10)) {
                     this.selectedDrone = drone;
                     this.drawDrones();
                 }
@@ -73,10 +66,10 @@ export default {
         setInterval(async () => {
             const axiosResponse = await axios.get("http://localhost:3000/api/drones");
             this.drones = axiosResponse.data as IDrone[];
-
             this.drawDrones();
         }, 2000);
-    }
+    },
+    components: { DroneInfo }
 }
 </script>
 
@@ -90,23 +83,13 @@ export default {
             <div class="sweep"></div>
             <canvas @click="e => selectDrone(e)" class="canvas"></canvas>
         </div>
-        <h1>Drone information</h1>
-        <div v-if="Object.keys(selectedDrone).length > 0" class="drone-info">
-            <h3>Serial number: {{ selectedDrone.serialNumber }}</h3>
-            <h3>Model: {{ selectedDrone.model }}</h3>
-            <h3>Manufacturer: {{ selectedDrone.manufacturer }}</h3>
-            <h5>MAC: {{ selectedDrone.mac }}</h5>
-            <h5>ipv4: {{ selectedDrone.ipv4 }}</h5>
-            <h5>ipv6: {{ selectedDrone.ipv6 }}</h5>
-            <h5>Firmware: {{ selectedDrone.firmware }}</h5>
-        </div>
-        <h3 v-else>Select a drone by clicking on it on the radar.</h3>
+        <DroneInfo :drone="selectedDrone" />
     </div>
 </template>
 
 <style scoped>
 .radar-container {
-    width: 500px;
+    width: 570px;
 }
 
 .radar {
@@ -121,6 +104,7 @@ export default {
     background-color: hsla(0, 0%, 0%, 0.39);
     position: relative;
     overflow: hidden;
+    margin: 0 auto;
 }
 
 .sweep {
