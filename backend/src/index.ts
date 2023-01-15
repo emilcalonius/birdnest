@@ -62,7 +62,8 @@ app.get('/api/violations', (req, res) => {
 
 app.get('/api/pilots', async (req, res) => {
     try {
-        const content = JSON.parse(fs.readFileSync(process.cwd() + '\\pilots.json', 'utf8'));
+        const pilots = JSON.parse(fs.readFileSync(process.cwd() + '\\pilots.json', 'utf8'));
+        res.send(pilots);
     } catch(err) {
         console.log(err);
     }

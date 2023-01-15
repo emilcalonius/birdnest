@@ -27,8 +27,8 @@ export const getDroneArray = json => {
 export const listViolations = (drones: IDrone[]) => {
     try {
         const violations: IDrone[] = drones.filter(drone => {
-            return (250000 - 100000 < drone.positionX && drone.positionX < 250000 + 100000) && 
-                (250000 - 100000 < drone.positionY && drone.positionY < 250000 + 100000);
+            return 100000 > Math.abs(Math.sqrt(Math.pow(250000-drone.positionX, 2)
+                +Math.pow(250000-drone.positionY, 2)));
         });
 
         let content = JSON.parse(fs.readFileSync(process.cwd() + '\\violations.json', 'utf8'));
@@ -36,8 +36,17 @@ export const listViolations = (drones: IDrone[]) => {
             const violation = {} as IViolation;
             const date = new Date();
             violation.date = date.toISOString();
-            violation.distanceFromNest = 
-                Math.abs(Math.sqrt(Math.pow(250000-drone.positionX, 2)+Math.pow(250000-drone.positionY, 2)));
+            const distance = Math.abs(Math.sqrt(Math.pow(250000-drone.positionX, 2)
+                +Math.pow(250000-drone.positionY, 2)));
+            if(Object.keys(content).includes(drone.serialNumber)) {
+                if(content[drone.serialNumber].distanceFromNest > distance) {
+                    violation.distanceFromNest = distance;
+                } else {
+                    violation.distanceFromNest = content[drone.serialNumber].distanceFromNest;
+                }
+            } else {
+                violation.distanceFromNest = distance;
+            }
             content[drone.serialNumber] = violation;
         })
         fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify(content, null, "\t"));
@@ -52,7 +61,7 @@ export const removeExpiredViolations = () => {
         Object.keys(violations).forEach((key: string) => {
             const TEN_MINUTES = 1000 * 60 * 10;
             const tenMinutesAgo = Date.now() - TEN_MINUTES;
-            if(Date.parse(violations[key]) < tenMinutesAgo) delete violations[key];
+            if(Date.parse(violations[key].date) < tenMinutesAgo) delete violations[key];
         });
         const pilots = JSON.parse(fs.readFileSync(process.cwd() + '\\pilots.json', 'utf8'));
         Object.keys(pilots).forEach((key) => {
