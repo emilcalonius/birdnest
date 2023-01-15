@@ -60,10 +60,9 @@ app.get('/api/violations', (req, res) => {
     }
 });
 
-app.get('/api/pilots/:serialNumber', async (req, res) => {
+app.get('/api/pilots', async (req, res) => {
     try {
-        const axiosResponse = await axios.get(`https://assignments.reaktor.com/birdnest/pilots/${req.params["serialNumber"]}`);
-        res.send(axiosResponse.data);
+        const content = JSON.parse(fs.readFileSync(process.cwd() + '\\pilots.json', 'utf8'));
     } catch(err) {
         console.log(err);
     }

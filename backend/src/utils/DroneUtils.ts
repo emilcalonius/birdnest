@@ -2,6 +2,7 @@ import axios from 'axios';
 import fs from 'fs';
 import { IDrone } from '../types/Drone.js';
 import { IPilot } from '../types/Pilot.js';
+import { IViolation } from '../types/Violation.js';
 
 export const getDroneArray = json => {
     const drones: Array<IDrone> = [];
@@ -32,7 +33,12 @@ export const listViolations = (drones: IDrone[]) => {
 
         let content = JSON.parse(fs.readFileSync(process.cwd() + '\\violations.json', 'utf8'));
         violations.forEach((drone: IDrone) => {
-            content[drone.serialNumber] = new Date();
+            const violation = {} as IViolation;
+            const date = new Date();
+            violation.date = date.toISOString();
+            violation.distanceFromNest = 
+                Math.abs(Math.sqrt(Math.pow(250000-drone.positionX, 2)+Math.pow(250000-drone.positionY, 2)));
+            content[drone.serialNumber] = violation;
         })
         fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify(content, null, "\t"));
     } catch(err) {

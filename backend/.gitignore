@@ -2,3 +2,4 @@ node_modules
 dist
 violations.json
 drones.json
+pilots.json

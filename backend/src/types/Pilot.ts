@@ -5,6 +5,4 @@ export interface IPilot {
     phoneNumber: string;
     createdDt: string;
     email: string;
-    violationTime: string;
-    distanceFromNest: number;
 }
