@@ -1,10 +1,15 @@
 <script lang="ts">
+import { PropType } from 'vue';
+import { IPilot } from '../types/Pilot';
 
 export default {
     name: "ListItem",
     props: {
         date: String,
-        serialNum: String
+        serialNum: String,
+        pilot: {
+            type: Object as PropType<IPilot>
+        }
     },
     computed: {
         formattedTime() {
@@ -17,6 +22,9 @@ export default {
             if(secs.length === 1) secs = `0${secs}`;
 
             return `${hours}:${mins}:${secs}`;
+        },
+        pilotFullName() {
+            return this.pilot?.firstName + " " + this.pilot?.lastName;
         }
     }
 }
@@ -25,14 +33,25 @@ export default {
 <template>
     <li class="list-item">
         <div class="side"></div>
-        <div class="time">
-            <h5>Time</h5>
-            <p>{{ formattedTime }}</p>
+        <div class="pilot">
+            <div class="time">
+                <h5>Time</h5>
+                <p>{{ formattedTime }}</p>
+            </div>
+            <div class="name">
+                <h5>Name</h5>
+                <p>{{ pilotFullName }}</p>
+            </div>
+            <div class="email">
+                <h5>Email</h5>
+                <p>{{ pilot?.email }}</p>
+            </div>
+            <div class="phone">
+                <h5>Phone</h5>
+                <p>{{ pilot?.phoneNumber }}</p>
+            </div>
         </div>
-        <div class="drone">
-            <h5>Drone serial num.</h5>
-            <p>{{ serialNum }}</p>
-        </div>
+        
     </li>
 </template>
 
@@ -46,7 +65,7 @@ export default {
     border: 2px solid black;
     border-radius: 5px;
     width: 490px;
-    height: 7rem;
+    height: 18rem;
 }
 
 .side {
@@ -56,14 +75,16 @@ export default {
     border-radius: 5px 0px 0px 5px;
 }
 
-.time, .drone {
-    padding: 0.5rem 2rem 0.5rem 2rem;
+.pilot {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    padding: 2rem;
 }
 
-@media (hover: hover) {
-    .list-item:hover {
-        transform: scale(105%);
-        cursor: pointer;
-    }
+.name, .email, .phone, .time {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 </style>

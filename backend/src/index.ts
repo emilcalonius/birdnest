@@ -4,6 +4,8 @@ import cors from 'cors';
 import { xml2json } from 'xml-js';
 import fs from 'fs';
 import { getDroneArray, listViolations, listDrones, removeExpiredViolations, listPilots } from './utils/DroneUtils.js';
+import { IViolation } from './types/Violation.js';
+import { IPilot } from './types/Pilot.js';
 
 const app = express();
 const port = 3000;
@@ -49,10 +51,10 @@ app.get('/api/drones', async (req, res) => {
 
 app.get('/api/violations', (req, res) => {
     try {
-        let content = JSON.parse(fs.readFileSync(process.cwd() + '\\violations.json', 'utf8'));
-        const arr = new Array<Array<string>>();
-        Object.keys(content).forEach(key => {
-            arr.push([key, content[key]]);
+        let violations = JSON.parse(fs.readFileSync(process.cwd() + '\\violations.json', 'utf8'));
+        const arr = new Array<IViolation>;
+        Object.keys(violations).forEach(key => {
+            arr.push(violations[key]);
         });
         res.send(arr);
     } catch(err) {
@@ -63,7 +65,11 @@ app.get('/api/violations', (req, res) => {
 app.get('/api/pilots', async (req, res) => {
     try {
         const pilots = JSON.parse(fs.readFileSync(process.cwd() + '\\pilots.json', 'utf8'));
-        res.send(pilots);
+        const arr = new Array<IPilot>;
+        Object.keys(pilots).forEach(key => {
+            arr.push(pilots[key]);
+        });
+        res.send(arr);
     } catch(err) {
         console.log(err);
     }

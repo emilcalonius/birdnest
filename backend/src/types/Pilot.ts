@@ -5,4 +5,5 @@ export interface IPilot {
     phoneNumber: string;
     createdDt: string;
     email: string;
+    droneSerialNumber: string;
 }

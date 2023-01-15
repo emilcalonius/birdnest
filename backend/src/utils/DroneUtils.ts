@@ -36,6 +36,7 @@ export const listViolations = (drones: IDrone[]) => {
             const violation = {} as IViolation;
             const date = new Date();
             violation.date = date.toISOString();
+            violation.droneSerialNumber = drone.serialNumber;
             const distance = Math.abs(Math.sqrt(Math.pow(250000-drone.positionX, 2)
                 +Math.pow(250000-drone.positionY, 2)));
             if(Object.keys(content).includes(drone.serialNumber)) {
@@ -95,6 +96,7 @@ export const listPilots = () => {
                 axios.get("https://assignments.reaktor.com/birdnest/pilots/"+key)
                 .then(res => res.data)
                 .then(pilot => {
+                    pilot.droneSerialNumber = key;
                     pilots[key] = pilot;
                     fs.writeFileSync(process.cwd() + '\\pilots.json', JSON.stringify(pilots, null, "\t"));
                 });
