@@ -43,11 +43,15 @@ export default {
 </template>
 
 <style scoped>
+.header {
+    padding-left: 1.5rem;
+}
+
 .list {
     height: 700px;
     overflow-y: scroll;
-    width: 30rem;
-    padding: 1.5rem;
+    width: 500px;
+    padding: 0 1.5rem 0 1.5rem;
 }
 
 .violations-list {

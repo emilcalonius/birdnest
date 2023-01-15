@@ -6,7 +6,8 @@ export default {
     name: "Radar",
     data() {
         return {
-            drones: [] as IDrone[]
+            drones: [] as IDrone[],
+            selectedDrone: {} as IDrone
         }
     },
     methods: {
@@ -38,18 +39,37 @@ export default {
             this.drones.forEach((drone: IDrone) => {
                 const x = drone.positionX / 1000;
                 const y = drone.positionY / 1000;
-                
+
+                if(drone.serialNumber === this.selectedDrone.serialNumber) {
+                    const indicator = new Path2D();
+                    indicator.arc(x, y, 15, 0, 2 * Math.PI);
+                    ctx.strokeStyle = "hsla(120, 100%, 47%, 0.42)";
+                    ctx.stroke(indicator);
+                }
+
+                const circle = new Path2D();
+                circle.arc(x, y, 10, 0, 2 * Math.PI);
                 ctx.fillStyle = "hsla(120, 100%, 47%, 0.42)";
-                ctx.fillRect(x, y, 10, 10);
+                ctx.fill(circle);
             })
         },
-        selectDrone() {
+        selectDrone(e: MouseEvent) {
+            const mouseX = e.offsetX;
+            const mouseY = e.offsetY;
 
+            this.drones.forEach((drone: IDrone) => {
+                const droneX = drone.positionX / 1000;
+                const droneY = drone.positionY / 1000;
+                if((mouseY >= droneY - 10 && mouseY <= droneY + 10) && 
+                (mouseX >= droneX - 10 && mouseX <= droneX + 10)) {
+                    this.selectedDrone = drone;
+                    this.drawDrones();
+                }
+            });
         }
     },
     mounted() {
         this.initCanvas();
-
         setInterval(async () => {
             const axiosResponse = await axios.get("http://localhost:3000/api/drones");
             this.drones = axiosResponse.data as IDrone[];
@@ -68,12 +88,27 @@ export default {
             <p class="one hundred">100m</p>
             <p class="two hundred">200m</p>
             <div class="sweep"></div>
-            <canvas class="canvas"></canvas>
+            <canvas @click="e => selectDrone(e)" class="canvas"></canvas>
         </div>
+        <h1>Drone information</h1>
+        <div v-if="Object.keys(selectedDrone).length > 0" class="drone-info">
+            <h3>Serial number: {{ selectedDrone.serialNumber }}</h3>
+            <h3>Model: {{ selectedDrone.model }}</h3>
+            <h3>Manufacturer: {{ selectedDrone.manufacturer }}</h3>
+            <h5>MAC: {{ selectedDrone.mac }}</h5>
+            <h5>ipv4: {{ selectedDrone.ipv4 }}</h5>
+            <h5>ipv6: {{ selectedDrone.ipv6 }}</h5>
+            <h5>Firmware: {{ selectedDrone.firmware }}</h5>
+        </div>
+        <h3 v-else>Select a drone by clicking on it on the radar.</h3>
     </div>
 </template>
 
 <style scoped>
+.radar-container {
+    width: 500px;
+}
+
 .radar {
     height: 500px;
     width: 500px;

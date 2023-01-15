@@ -45,7 +45,7 @@ export default {
     background-color: hsl(235, 16%, 15%);
     border: 2px solid black;
     border-radius: 5px;
-    width: 25rem;
+    width: 490px;
     height: 7rem;
 }
 

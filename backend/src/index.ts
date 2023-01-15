@@ -17,6 +17,13 @@ interface IDrone {
     positionX: number;
     positionY: number;
     serialNumber: string;
+    model: string;
+    manufacturer: string;
+    mac: string;
+    ipv4: string;
+    ipv6: string;
+    firmware: string;
+    altitude: string;
 }
 
 fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify({}, null, "\t"));
@@ -28,7 +35,14 @@ const getDroneArray = json => {
         const newDrone = {
             positionX: Number(drone.positionX._text),
             positionY: Number(drone.positionY._text),
-            serialNumber: drone.serialNumber._text
+            serialNumber: drone.serialNumber._text,
+            model: drone.model._text,
+            manufacturer: drone.manufacturer._text,
+            mac: drone.mac._text,
+            ipv4: drone.ipv4._text,
+            ipv6: drone.ipv6._text,
+            firmware: drone.firmware._text,
+            altitude: drone.altitude._text
         }
         drones.push(newDrone);
     });
