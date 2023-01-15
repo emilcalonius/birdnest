@@ -3,6 +3,7 @@ import axios from 'axios';
 import cors from 'cors';
 import { xml2json } from 'xml-js';
 import fs from 'fs';
+import { getDroneArray, listViolations, listDrones, removeExpiredViolations, listPilots } from './utils/DroneUtils.js';
 
 const app = express();
 const port = 3000;
@@ -13,85 +14,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-interface IDrone {
-    positionX: number;
-    positionY: number;
-    serialNumber: string;
-    model: string;
-    manufacturer: string;
-    mac: string;
-    ipv4: string;
-    ipv6: string;
-    firmware: string;
-    altitude: string;
-}
-
 fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify({}, null, "\t"));
 fs.writeFileSync(process.cwd() + '\\drones.json', JSON.stringify({}, null, "\t"));
-
-const getDroneArray = json => {
-    const drones: Array<IDrone> = [];
-    json.report.capture.drone.forEach(drone => {
-        const newDrone = {
-            positionX: Number(drone.positionX._text),
-            positionY: Number(drone.positionY._text),
-            serialNumber: drone.serialNumber._text,
-            model: drone.model._text,
-            manufacturer: drone.manufacturer._text,
-            mac: drone.mac._text,
-            ipv4: drone.ipv4._text,
-            ipv6: drone.ipv6._text,
-            firmware: drone.firmware._text,
-            altitude: drone.altitude._text
-        }
-        drones.push(newDrone);
-    });
-    return drones;
-}
-
-const listviolations = (drones: IDrone[]) => {
-    try {
-        const violations: IDrone[] = drones.filter(drone => {
-            return (250000 - 100000 < drone.positionX && drone.positionX < 250000 + 100000) && 
-                (250000 - 100000 < drone.positionY && drone.positionY < 250000 + 100000);
-        });
-
-        let content = JSON.parse(fs.readFileSync(process.cwd() + '\\violations.json', 'utf8'));
-        violations.forEach((drone: IDrone) => {
-            content[drone.serialNumber] = new Date();
-        })
-        fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify(content, null, "\t"));
-    } catch(err) {
-        console.log(err);
-    }
-}
-
-const removeExpiredViolations = () => {
-    try {
-        let content = JSON.parse(fs.readFileSync(process.cwd() + '\\violations.json', 'utf8'));
-        Object.keys(content).forEach((key: string) => {
-            const TEN_MINUTES = 1000 * 60 * 10; //ten minutes in milliseconds
-            const tenMinutesAgo = Date.now() - TEN_MINUTES;
-            if(Date.parse(content[key]) < tenMinutesAgo) delete content[key];
-
-        })
-        fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify(content, null, "\t"));
-    } catch(err) {
-        console.log(err);
-    }
-}
-
-const listDrones = (drones: IDrone[]) => {
-    try {
-        let content = {};
-        drones.forEach((drone: IDrone) => {
-            content[drone.serialNumber] = drone;
-        })
-        fs.writeFileSync(process.cwd() + '\\drones.json', JSON.stringify(content, null, "\t"));
-    } catch(err) {
-        console.log(err);
-    }
-}
+fs.writeFileSync(process.cwd() + '\\pilots.json', JSON.stringify({}, null, "\t"));
 
 // Fetch drones, list airspace violations and remove expired violations every 2 seconds
 setInterval(async () => {
@@ -101,7 +26,8 @@ setInterval(async () => {
         
         const droneArray = getDroneArray(json);
         listDrones(droneArray);
-        listviolations(droneArray);
+        listViolations(droneArray);
+        listPilots();
         removeExpiredViolations();
     } catch(err) {
         console.log(err);
