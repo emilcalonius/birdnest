@@ -9,7 +9,8 @@ export default {
     data() {
         return {
             violations: [] as IViolation[],
-            pilots: [] as IPilot[]
+            pilots: [] as IPilot[],
+            loading: true
         }
     },
     computed: {
@@ -20,13 +21,16 @@ export default {
         }
     },
     created() {
-        setInterval(async () => {
-            const violationResponse = await axios.get("http://localhost:3000/api/violations");
-            const violationsList = violationResponse.data;
-            this.violations = violationsList;
-            const pilotResponse = await axios.get("http://localhost:3000/api/pilots");
-            const pilots = pilotResponse.data;
-            this.pilots = pilots;
+        setInterval(() => {
+            axios.get("http://localhost:3000/api/violations")
+                .then(res => res.data)
+                .then(data => this.violations = data);
+            axios.get("http://localhost:3000/api/pilots")
+                .then(res => res.data)
+                .then(data => {
+                    this.pilots = data;
+                    this.loading = false;
+                });
         }, 2000);
     },
     components: { ListItem }
@@ -35,9 +39,10 @@ export default {
 
 <template>
     <div class="list-container">
-        <h1 class="header">Violations</h1>
+        <h1 class="header">Violations (last 10 minutes)</h1>
         <div class="list">
-            <ul class="violations-list">
+            <img src="../assets/loading.gif" alt="loading indicator" class="loading" v-if="loading">
+            <ul class="violations-list" v-else>
                 <ListItem 
                     v-for="violation in sortedViolations" 
                     :date="violation.date" 
@@ -51,6 +56,10 @@ export default {
 </template>
 
 <style scoped>
+.loading {
+    width: 50px;
+}
+
 .header {
     padding-left: 1.5rem;
 }
