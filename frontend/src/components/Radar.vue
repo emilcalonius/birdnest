@@ -42,6 +42,9 @@ export default {
                 ctx.fillStyle = "hsla(120, 100%, 47%, 0.42)";
                 ctx.fillRect(x, y, 10, 10);
             })
+        },
+        selectDrone() {
+
         }
     },
     mounted() {
@@ -60,6 +63,10 @@ export default {
 <template>
     <div class="radar-container">
         <div class="radar">
+            <div class="vertical-line"></div>
+            <div class="horizontal-line"></div>
+            <p class="one hundred">100m</p>
+            <p class="two hundred">200m</p>
             <div class="sweep"></div>
             <canvas class="canvas"></canvas>
         </div>
@@ -68,16 +75,17 @@ export default {
 
 <style scoped>
 .radar {
-    height: 700px;
-    width: 700px;
+    height: 500px;
+    width: 500px;
     border: 2px solid var(--radar-green);
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: repeating-radial-gradient(transparent, transparent 58px, var(--radar-green) 60px, var(--radar-green) 62px);
+    background: repeating-radial-gradient(circle at center, transparent 0px, transparent 47px, var(--radar-green) 52px);
     background-color: hsla(0, 0%, 0%, 0.39);
     position: relative;
+    overflow: hidden;
 }
 
 .sweep {
@@ -90,12 +98,43 @@ export default {
     animation: sweep 10s infinite linear;
     transform-origin: left top;
     background: linear-gradient(80deg, var(--radar-green) 1%, transparent 17%);
-    
 }
 
 @keyframes sweep {
     to {
         transform: rotate(360deg);
     }
+}
+
+.canvas {
+    border: 1px solid red;
+}
+
+.vertical-line {
+    border: 1px solid var(--radar-green);
+    height: 500px;
+    position: absolute;
+}
+
+.horizontal-line {
+    border: 1px solid var(--radar-green);
+    width: 500px;
+    position: absolute;
+}
+
+.hundred {
+    color: var(--radar-green);
+}
+
+.one {
+    position: absolute;
+    top: 106px;
+    left: 255px;
+}
+
+.two {
+    position: absolute;
+    top: 6px;
+    left: 255px;
 }
 </style>
