@@ -59,14 +59,18 @@ export default {
                     this.drawDrones();
                 }
             });
-        }
-    },
-    mounted() {
-        this.initCanvas();
-        setInterval(async () => {
+        },
+        async fetchDrones() {
             const axiosResponse = await axios.get(`${import.meta.env.VITE_BACKEND_HOST}/api/drones`);
             this.drones = axiosResponse.data as IDrone[];
             this.drawDrones();
+        }
+    },
+    async mounted() {
+        this.initCanvas();
+        this.fetchDrones();
+        setInterval(async () => {
+            this.fetchDrones();
         }, 2000);
     },
     components: { DroneInfo }

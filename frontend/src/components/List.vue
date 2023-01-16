@@ -20,8 +20,8 @@ export default {
             return violationsList;
         }
     },
-    created() {
-        setInterval(() => {
+    methods: {
+        fetchViolations() {
             axios.get(`${import.meta.env.VITE_BACKEND_HOST}/api/violations`)
                 .then(res => res.data)
                 .then(data => this.violations = data);
@@ -31,6 +31,12 @@ export default {
                     this.pilots = data;
                     this.loading = false;
                 });
+        }
+    },
+    async created() {
+        this.fetchViolations();
+        setInterval(() => {
+            this.fetchViolations();
         }, 2000);
     },
     components: { ListItem }
