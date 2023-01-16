@@ -4,8 +4,7 @@ import cors from 'cors';
 import { xml2json } from 'xml-js';
 import fs from 'fs';
 import { getDroneArray, listViolations, listDrones, removeExpiredViolations, listPilots } from './utils/DroneUtils.js';
-import { IViolation } from './types/Violation.js';
-import { IPilot } from './types/Pilot.js';
+import { IViolation, IPilot } from './types/Types.js';
 
 const app = express();
 const port = 3000;
@@ -16,9 +15,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-fs.writeFileSync(process.cwd() + '\\violations.json', JSON.stringify({}, null, "\t"));
-fs.writeFileSync(process.cwd() + '\\drones.json', JSON.stringify({}, null, "\t"));
-fs.writeFileSync(process.cwd() + '\\pilots.json', JSON.stringify({}, null, "\t"));
+fs.writeFileSync('./src/violations.json', JSON.stringify({}, null, "\t"));
+fs.writeFileSync('./src/drones.json', JSON.stringify({}, null, "\t"));
+fs.writeFileSync('./src/pilots.json', JSON.stringify({}, null, "\t"));
 
 // Fetch drones, list airspace violations and remove expired violations every 2 seconds
 setInterval(async () => {
@@ -27,9 +26,11 @@ setInterval(async () => {
         const json = JSON.parse(xml2json(axiosResponse.data, { compact: true }));
         
         const droneArray = getDroneArray(json);
+
         listDrones(droneArray);
         listViolations(droneArray);
         listPilots();
+
         removeExpiredViolations();
     } catch(err) {
         console.log(err);
@@ -38,10 +39,10 @@ setInterval(async () => {
 
 app.get('/api/drones', async (req, res) => {
     try {
-        let content = JSON.parse(fs.readFileSync(process.cwd() + '\\drones.json', 'utf8'));
+        const drones = JSON.parse(fs.readFileSync('./src/drones.json', 'utf8'));
         const arr = new Array<Array<number>>();
-        Object.keys(content).forEach(key => {
-            arr.push(content[key]);
+        Object.keys(drones).forEach(key => {
+            arr.push(drones[key]);
         });
         res.send(arr);
     } catch(err) {
@@ -51,7 +52,7 @@ app.get('/api/drones', async (req, res) => {
 
 app.get('/api/violations', (req, res) => {
     try {
-        let violations = JSON.parse(fs.readFileSync(process.cwd() + '\\violations.json', 'utf8'));
+        const violations = JSON.parse(fs.readFileSync('./src/violations.json', 'utf8'));
         const arr = new Array<IViolation>;
         Object.keys(violations).forEach(key => {
             arr.push(violations[key]);
@@ -64,7 +65,7 @@ app.get('/api/violations', (req, res) => {
 
 app.get('/api/pilots', async (req, res) => {
     try {
-        const pilots = JSON.parse(fs.readFileSync(process.cwd() + '\\pilots.json', 'utf8'));
+        const pilots = JSON.parse(fs.readFileSync('./src/pilots.json', 'utf8'));
         const arr = new Array<IPilot>;
         Object.keys(pilots).forEach(key => {
             arr.push(pilots[key]);

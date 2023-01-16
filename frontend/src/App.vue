@@ -4,9 +4,7 @@ import Radar from './components/Radar.vue';
 </script>
 
 <template>
-  <div class="header">
-    <h1>Birdnest Radar</h1>
-  </div>
+  <h1>Birdnest Radar</h1>
   <div class="main">
     <Radar />
     <List />
