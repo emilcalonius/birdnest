@@ -31,12 +31,7 @@ body {
   gap: 2rem;
   place-items: center;
   justify-content: center;
-}
-
-@media screen and (max-width: 1280px) {
-  #app {
-    flex-direction: column;
-  }
+  flex-direction: column;
 }
 
 /* Scrollbar styles */

@@ -19,7 +19,7 @@ export default {
             const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
             ctx.strokeStyle = "red";
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.arc(250, 250, 100, 0, 2 * Math.PI);
             ctx.stroke();
@@ -32,7 +32,7 @@ export default {
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = "red";
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 4;
             ctx.beginPath();
             ctx.arc(250, 250, 100, 0, 2 * Math.PI);
             ctx.stroke();
@@ -45,6 +45,7 @@ export default {
                     const indicator = new Path2D();
                     indicator.arc(x, y, 15, 0, 2 * Math.PI);
                     ctx.strokeStyle = "hsla(120, 100%, 47%, 0.42)";
+                    ctx.lineWidth = 3;
                     ctx.stroke(indicator);
                 }
 
@@ -70,8 +71,9 @@ export default {
             });
         },
         async fetchDrones() {
-            const axiosResponse = await axios.get(`${BACKEND_HOST}/api/drones`);
-            this.drones = axiosResponse.data as IDrone[];
+            const dronesRes = await axios.get(`${BACKEND_HOST}/api/drones`);
+            const drones = await dronesRes.data;
+            this.drones = drones;
             this.drawDrones();
         }
     },

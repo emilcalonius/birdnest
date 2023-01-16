@@ -72,7 +72,6 @@ export default {
     display: flex;
     gap: 1rem;
     background-color: hsl(235, 16%, 15%);
-    border: 2px solid black;
     border-radius: 5px;
     width: 525px;
     height: 9rem;
