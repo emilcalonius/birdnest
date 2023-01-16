@@ -64,7 +64,7 @@ export default {
     mounted() {
         this.initCanvas();
         setInterval(async () => {
-            const axiosResponse = await axios.get("http://localhost:3000/api/drones");
+            const axiosResponse = await axios.get(`${import.meta.env.VITE_BACKEND_HOST}/api/drones`);
             this.drones = axiosResponse.data as IDrone[];
             this.drawDrones();
         }, 2000);

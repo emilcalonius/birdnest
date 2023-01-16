@@ -22,10 +22,10 @@ export default {
     },
     created() {
         setInterval(() => {
-            axios.get("http://localhost:3000/api/violations")
+            axios.get(`${import.meta.env.VITE_BACKEND_HOST}/api/violations`)
                 .then(res => res.data)
                 .then(data => this.violations = data);
-            axios.get("http://localhost:3000/api/pilots")
+            axios.get(`${import.meta.env.VITE_BACKEND_HOST}/api/pilots`)
                 .then(res => res.data)
                 .then(data => {
                     this.pilots = data;
