@@ -1,22 +1,25 @@
 <script lang="ts">
 import axios from 'axios';
-import { IDrone } from '../types/Drone';
+import { IDrone } from '../types/Types';
 import DroneInfo from './DroneInfo.vue';
+
+const BACKEND_HOST = import.meta.env.VITE_BACKEND_HOST;
 
 export default {
     name: "Radar",
     data() {
         return {
             drones: [] as IDrone[],
-            selectedDrone: {} as IDrone
+            selectedDrone: null as IDrone | null
         };
     },
     methods: {
         initCanvas(): void {
             const canvas = document.querySelector(".canvas") as HTMLCanvasElement;
             const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+
             ctx.strokeStyle = "red";
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.arc(250, 250, 100, 0, 2 * Math.PI);
             ctx.stroke();
@@ -26,21 +29,25 @@ export default {
         drawDrones(): void {
             const canvas = document.querySelector(".canvas") as HTMLCanvasElement;
             const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = "red";
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.arc(250, 250, 100, 0, 2 * Math.PI);
             ctx.stroke();
+
             this.drones.forEach((drone: IDrone) => {
                 const x = drone.positionX / 1000;
                 const y = drone.positionY / 1000;
-                if (drone.serialNumber === this.selectedDrone.serialNumber) {
+
+                if (this.selectedDrone && drone.serialNumber === this.selectedDrone.serialNumber) {
                     const indicator = new Path2D();
                     indicator.arc(x, y, 15, 0, 2 * Math.PI);
                     ctx.strokeStyle = "hsla(120, 100%, 47%, 0.42)";
                     ctx.stroke(indicator);
                 }
+
                 const circle = new Path2D();
                 circle.arc(x, y, 10, 0, 2 * Math.PI);
                 ctx.fillStyle = "hsla(120, 100%, 47%, 0.42)";
@@ -50,9 +57,11 @@ export default {
         selectDrone(e: MouseEvent) {
             const mouseX = e.offsetX;
             const mouseY = e.offsetY;
+
             this.drones.forEach((drone: IDrone) => {
                 const droneX = drone.positionX / 1000;
                 const droneY = drone.positionY / 1000;
+
                 if ((mouseY >= droneY - 10 && mouseY <= droneY + 10) &&
                     (mouseX >= droneX - 10 && mouseX <= droneX + 10)) {
                     this.selectedDrone = drone;
@@ -61,15 +70,16 @@ export default {
             });
         },
         async fetchDrones() {
-            const axiosResponse = await axios.get(`${import.meta.env.VITE_BACKEND_HOST}/api/drones`);
+            const axiosResponse = await axios.get(`${BACKEND_HOST}/api/drones`);
             this.drones = axiosResponse.data as IDrone[];
             this.drawDrones();
         }
     },
-    async mounted() {
+    mounted() {
         this.initCanvas();
         this.fetchDrones();
-        setInterval(async () => {
+
+        setInterval(() => {
             this.fetchDrones();
         }, 2000);
     },
@@ -87,11 +97,17 @@ export default {
             <div class="sweep"></div>
             <canvas @click="e => selectDrone(e)" class="canvas"></canvas>
         </div>
-        <DroneInfo :drone="selectedDrone" />
+        <h1 class="header">Drone information</h1>
+        <DroneInfo v-if="selectedDrone" :drone="selectedDrone" />
+        <h3 v-else>Select a drone by clicking on it on the radar.</h3>
     </div>
 </template>
 
 <style scoped>
+.canvas {
+    z-index: 1
+}
+
 .radar-container {
     width: 570px;
 }
@@ -104,7 +120,7 @@ export default {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: repeating-radial-gradient(circle at center, transparent 0px, transparent 47px, var(--radar-green) 52px);
+    background: repeating-radial-gradient(circle at center, transparent 0px, transparent 47px, var(--radar-green) 51px);
     background-color: hsla(0, 0%, 0%, 0.39);
     position: relative;
     overflow: hidden;
@@ -118,7 +134,7 @@ export default {
     width: 50%;
     height: 50%;
     border-left: 3px solid var(--radar-green);
-    animation: sweep 10s infinite linear;
+    animation: sweep 4s infinite linear;
     transform-origin: left top;
     background: linear-gradient(80deg, var(--radar-green) 1%, transparent 17%);
 }
@@ -127,10 +143,6 @@ export default {
     to {
         transform: rotate(360deg);
     }
-}
-
-.canvas {
-    border: 1px solid red;
 }
 
 .vertical-line {

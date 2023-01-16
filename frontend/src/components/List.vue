@@ -1,8 +1,9 @@
 <script lang="ts">
 import axios from 'axios';
 import ListItem from './ListItem.vue';
-import { IViolation } from '../types/Violation';
-import { IPilot } from '../types/Pilot';
+import { IViolation, IPilot } from '../types/Types';
+
+const BACKEND_HOST = import.meta.env.VITE_BACKEND_HOST;
 
 export default {
     name: "List",
@@ -21,20 +22,21 @@ export default {
         }
     },
     methods: {
-        fetchViolations() {
-            axios.get(`${import.meta.env.VITE_BACKEND_HOST}/api/violations`)
-                .then(res => res.data)
-                .then(data => this.violations = data);
-            axios.get(`${import.meta.env.VITE_BACKEND_HOST}/api/pilots`)
-                .then(res => res.data)
-                .then(data => {
-                    this.pilots = data;
-                    this.loading = false;
-                });
+        async fetchViolations() {
+            const violationRes = await axios.get(`${BACKEND_HOST}/api/violations`);
+            const violations = await violationRes.data;
+            this.violations = violations;
+
+            const pilotRes = await axios.get(`${BACKEND_HOST}/api/pilots`);
+            const pilots = await pilotRes.data;
+            this.pilots = pilots;
+
+            this.loading = false;
         }
     },
-    async created() {
+    created() {
         this.fetchViolations();
+
         setInterval(() => {
             this.fetchViolations();
         }, 2000);
@@ -63,7 +65,7 @@ export default {
 
 <style scoped>
 .loading {
-    width: 50px;
+    width: 3rem;
 }
 
 .list {
