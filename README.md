@@ -16,3 +16,17 @@ Simulated drone positions are fetched from an external API maintained by Reaktor
 ## Usage
 
 Test the application here: https://calonius.me/birdnest 
+
+**OR**  
+
+### Run the application locally
+
+1. Clone this repository
+2. Start the backend:
+    - Navigate to ``./backend``
+    - Install dependencies with ``npm i``
+    - Start the server with ``npm run start``
+3. Start the frontend:
+    - Navigate to ``./frontend``
+    - Install dependencies with ``npm i``
+    - Start the application in development mode with ``npm run dev``
