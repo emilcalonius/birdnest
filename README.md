@@ -29,4 +29,5 @@ Test the application here: https://calonius.me/birdnest
 3. Start the frontend:
     - Navigate to ``./frontend``
     - Install dependencies with ``npm i``
+    - Set the backend host in the ``.env`` file
     - Start the application in development mode with ``npm run dev``
