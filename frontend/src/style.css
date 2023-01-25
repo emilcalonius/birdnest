@@ -16,11 +16,13 @@
   -webkit-text-size-adjust: 100%;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-height: 100vh;
+  min-width: 100vw;
   overflow-x: hidden;
 }
 
@@ -32,6 +34,7 @@ body {
   place-items: center;
   justify-content: center;
   flex-direction: column;
+  max-width: 1280px;
 }
 
 /* Scrollbar styles */
@@ -56,4 +59,15 @@ body {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+@media screen and (max-width: 650px) {
+  #app {
+    transform: scale(0.6);
+    transform-origin: top;
+  }
+
+  body {
+    height: 1260px
+  }
 }

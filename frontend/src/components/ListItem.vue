@@ -35,7 +35,7 @@ export default {
 </script>
 
 <template>
-    <li class="list-item" v-if="pilot">
+    <li class="list-item" :key="pilot.pilotId" v-if="pilot">
         <div class="side"></div>
         <div class="pilot">
             <div class="name">
@@ -60,14 +60,9 @@ export default {
             </div>
         </div>
     </li>
-    <img src="../assets/loading.gif" alt="loading indicator" class="loading" v-else />
 </template>
 
 <style scoped>
-.loading {
-    width: 3rem;
-}
-
 .list-item {
     display: flex;
     gap: 1rem;
